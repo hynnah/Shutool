@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shutool.Views.Auth.RegisterPage"
+             BackgroundColor="Transparent"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Pixel Background -->
+    <Grid>
+        <Image
+            Source="bg1.png"
+            Aspect="AspectFill"/>
+
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="24"
+                Spacing="0"
+                VerticalOptions="Center">
+
+                <!-- Top Icons Row -->
+                <Grid Margin="0,48,0,0">
+                    <Image
+                        Source="settings.png"
+                        HeightRequest="36"
+                        WidthRequest="36"
+                        HorizontalOptions="Start"/>
+                    <Image
+                        Source="settings2.png"
+                        HeightRequest="36"
+                        WidthRequest="36"
+                        HorizontalOptions="End"/>
+                </Grid>
+
+                <!-- Bus Image -->
+                <Image
+                    Source="bus.png"
+                    HeightRequest="110"
+                    HorizontalOptions="Center"
+                    Margin="0,8,0,0"/>
+
+                <!-- Card -->
+                <Border
+                    BackgroundColor="#F5F0E8CC"
+                    StrokeShape="RoundRectangle 24"
+                    Stroke="Transparent"
+                    Padding="24"
+                    Margin="0,8,0,32">
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label
+                            Text="Create New Account"
+                            Style="{StaticResource PixelLabel}"
+                            FontSize="12"
+                            TextColor="{StaticResource PrimaryGreen}"
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,8"/>
+
+                        <!-- Name -->
+                        <Label Text="Name" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="{StaticResource PrimaryGreen}"/>
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="NameEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}"/>
+                        </Border>
+
+                        <!-- Email -->
+                        <Label Text="Email" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="{StaticResource PrimaryGreen}"/>
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="RegisterEmailEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" Keyboard="Email"/>
+                        </Border>
+
+                        <!-- Password -->
+                        <Label Text="Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="{StaticResource PrimaryGreen}"/>
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="RegisterPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True"/>
+                        </Border>
+
+                        <!-- Confirm Password -->
+                        <Label Text="Confirm Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="{StaticResource PrimaryGreen}"/>
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="ConfirmPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True"/>
+                        </Border>
+
+                        <!-- Error -->
+                        <Label
+                            x:Name="RegisterErrorLabel"
+                            TextColor="Red"
+                            FontSize="9"
+                            IsVisible="False"
+                            HorizontalOptions="Center"/>
+
+                        <!-- Sign Up Button -->
+                        <Button
+                            Text="SIGN UP"
+                            Style="{StaticResource PixelButton}"
+                            BackgroundColor="{StaticResource LightGreen}"
+                            Clicked="OnRegisterClicked"
+                            Margin="0,8,0,0"/>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

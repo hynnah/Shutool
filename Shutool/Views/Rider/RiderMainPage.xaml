@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shutool.Views.Rider.RiderMainPage"
+             BackgroundColor="Transparent"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Pixel Background -->
+        <Image Source="bg2.png" Aspect="AspectFill"/>
+
+        <ScrollView>
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Top Bar -->
+                <Grid Grid.Row="0" Padding="20,52,20,8">
+                    <ImageButton
+                        Source="settings.png"
+                        HeightRequest="36"
+                        WidthRequest="36"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Start"
+                        Clicked="OnSettingsClicked"/>
+                    <ImageButton
+                        Source="settings2.png"
+                        HeightRequest="36"
+                        WidthRequest="36"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="End"
+                        Clicked="OnLogoutClicked"/>
+                </Grid>
+
+                <VerticalStackLayout Grid.Row="1" Padding="16,0,16,32" Spacing="0">
+
+                    <!-- Tab Buttons -->
+                    <Grid ColumnDefinitions="*,*" Margin="0,0,0,12" ColumnSpacing="8">
+                        <Button
+                            x:Name="PriorityTabBtn"
+                            Grid.Column="0"
+                            Text="Priority Request"
+                            BackgroundColor="{StaticResource YellowAccent}"
+                            TextColor="{StaticResource TextDark}"
+                            CornerRadius="20"
+                            FontSize="10"
+                            HeightRequest="40"
+                            Clicked="OnPriorityTabClicked"/>
+                        <Button
+                            x:Name="HistoryTabBtn"
+                            Grid.Column="1"
+                            Text="Request History"
+                            BackgroundColor="{StaticResource LightGreen}"
+                            TextColor="{StaticResource TextDark}"
+                            CornerRadius="20"
+                            FontSize="10"
+                            HeightRequest="40"
+                            Clicked="OnHistoryTabClicked"/>
+                    </Grid>
+
+                    <!-- Card -->
+                    <Border
+                        BackgroundColor="#F5F0E8EE"
+                        StrokeShape="RoundRectangle 24"
+                        Stroke="Transparent"
+                        Padding="20">
+
+                        <VerticalStackLayout Spacing="12">
+
+                            <!-- Bus Image -->
+                            <Image
+                                Source="bus.png"
+                                HeightRequest="110"
+                                HorizontalOptions="Center"
+                                Margin="0,-50,0,0"/>
+
+                            <!-- Priority Request Panel -->
+                            <VerticalStackLayout x:Name="PriorityPanel" Spacing="12">
+
+                                <Label
+                                    Text="Send Priority Request"
+                                    Style="{StaticResource PixelLabel}"
+                                    FontSize="12"
+                                    TextColor="{StaticResource PrimaryGreen}"
+                                    HorizontalOptions="Center"/>
+
+                                <!-- Shuttle Number Dropdown -->
+                                <Label
+                                    Text="Shuttle Number"
+                                    Style="{StaticResource PixelLabel}"
+                                    FontSize="8"
+                                    TextColor="{StaticResource PrimaryGreen}"/>
+                                <Border
+                                    BackgroundColor="White"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="Transparent"
+                                    Padding="8,4">
+                                    <Picker
+                                        x:Name="ShuttlePicker"
+                                        Title="Select or type shuttle #"
+                                        TextColor="{StaticResource TextDark}"
+                                        BackgroundColor="Transparent"
+                                        TitleColor="#888"/>
+                                </Border>
+
+                                <!-- Note Label -->
+                                <Label
+                                    Text="Why do you need a ride?"
+                                    Style="{StaticResource PixelLabel}"
+                                    FontSize="8"
+                                    TextColor="{StaticResource PrimaryGreen}"/>
+
+                                <!-- Note Input -->
+                                <Border
+                                    BackgroundColor="White"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="Transparent"
+                                    Padding="8">
+                                    <Editor
+                                        x:Name="NoteEditor"
+                                        HeightRequest="120"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource TextDark}"
+                                        Placeholder="Optional note..."
+                                        PlaceholderColor="#aaa"/>
+                                </Border>
+
+                                <!-- Limit Info -->
+                                <Label
+                                    x:Name="LimitLabel"
+                                    FontSize="9"
+                                    TextColor="{StaticResource PrimaryGreen}"
+                                    HorizontalOptions="Center"/>
+
+                                <!-- Error -->
+                                <Label
+                                    x:Name="ErrorLabel"
+                                    TextColor="Red"
+                                    FontSize="9"
+                                    IsVisible="False"
+                                    HorizontalOptions="Center"/>
+
+                            </VerticalStackLayout>
+
+                            <!-- History Panel -->
+                            <VerticalStackLayout x:Name="HistoryPanel" IsVisible="False" Spacing="12">
+
+                                <Label
+                                    Text="Request History"
+                                    Style="{StaticResource PixelLabel}"
+                                    FontSize="12"
+                                    TextColor="{StaticResource PrimaryGreen}"
+                                    HorizontalOptions="Center"/>
+
+                                <!-- Table Header -->
+                                <Grid ColumnDefinitions="*,*,*"
+                                      Padding="8,4"
+                                      BackgroundColor="Transparent">
+                                    <Label Grid.Column="0" Text="Date" FontAttributes="Bold" FontSize="11" TextColor="{StaticResource TextDark}"/>
+                                    <Label Grid.Column="1" Text="Time" FontAttributes="Bold" FontSize="11" TextColor="{StaticResource TextDark}" HorizontalOptions="Center"/>
+                                    <Label Grid.Column="2" Text="Status" FontAttributes="Bold" FontSize="11" TextColor="{StaticResource TextDark}" HorizontalOptions="End"/>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" Color="{StaticResource YellowAccent}"/>
+
+                                <!-- History Rows -->
+                                <CollectionView
+                                    x:Name="HistoryCollection"
+                                    SelectionMode="None">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <VerticalStackLayout>
+                                                <Grid ColumnDefinitions="*,*,*" Padding="8,10">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        Text="{Binding CreatedAt, StringFormat='{0:MM/dd}'}"
+                                                        FontSize="11"
+                                                        TextColor="{StaticResource TextDark}"/>
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        Text="{Binding CreatedAt, StringFormat='{0:hh:mm tt}'}"
+                                                        FontSize="11"
+                                                        TextColor="{StaticResource TextDark}"
+                                                        HorizontalOptions="Center"/>
+                                                    <Label
+                                                        Grid.Column="2"
+                                                        Text="{Binding StatusText}"
+                                                        FontSize="11"
+                                                        HorizontalOptions="End">
+                                                        <Label.Triggers>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Handled}" Value="True">
+                                                                <Setter Property="TextColor" Value="{StaticResource LightGreen}"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label" Binding="{Binding Handled}" Value="False">
+                                                                <Setter Property="TextColor" Value="{StaticResource YellowAccent}"/>
+                                                            </DataTrigger>
+                                                        </Label.Triggers>
+                                                    </Label>
+                                                </Grid>
+                                                <BoxView HeightRequest="1" Color="{StaticResource YellowAccent}" Opacity="0.4"/>
+                                            </VerticalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <Label
+                                    x:Name="EmptyHistoryLabel"
+                                    Text="No requests yet."
+                                    FontSize="11"
+                                    TextColor="#888"
+                                    HorizontalOptions="Center"
+                                    IsVisible="False"/>
+
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Send / Refresh Button -->
+                    <Button
+                        x:Name="ActionButton"
+                        Text="Send"
+                        Style="{StaticResource PixelButton}"
+                        BackgroundColor="{StaticResource LightGreen}"
+                        HorizontalOptions="Center"
+                        WidthRequest="200"
+                        Margin="0,16,0,0"
+                        Clicked="OnActionButtonClicked"/>
+
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

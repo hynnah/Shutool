@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shutool.Views.Auth.LoginPage"
+             BackgroundColor="{StaticResource PageBackground}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="32"
+            Spacing="0"
+            VerticalOptions="Center">
+
+            <!-- Logo -->
+            <Image
+                Source="shutoollogo.png"
+                HeightRequest="120"
+                HorizontalOptions="Center"
+                Margin="0,60,0,8"/>
+
+            <!-- Tagline -->
+            <Label
+                Text="SKIP THE WAIT, DON'T BE LATE."
+                Style="{StaticResource PixelLabel}"
+                FontSize="8"
+                HorizontalOptions="Center"
+                Margin="0,0,0,48"/>
+
+            <!-- Card -->
+            <Border
+                BackgroundColor="{StaticResource CardBackground}"
+                StrokeShape="RoundRectangle 24"
+                Stroke="Transparent"
+                Padding="24">
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+                        Text="Log in to your account"
+                        Style="{StaticResource PixelLabel}"
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,8"/>
+
+                    <!-- Email -->
+                    <Border
+                        BackgroundColor="{StaticResource DarkCard}"
+                        StrokeShape="RoundRectangle 25"
+                        Stroke="Transparent"
+                        Padding="16,4">
+                        <Entry
+                            x:Name="EmailEntry"
+                            Placeholder="Email"
+                            PlaceholderColor="#aaa"
+                            TextColor="White"
+                            BackgroundColor="Transparent"
+                            Keyboard="Email"/>
+                    </Border>
+
+                    <!-- Password -->
+                    <Border
+                        BackgroundColor="{StaticResource DarkCard}"
+                        StrokeShape="RoundRectangle 25"
+                        Stroke="Transparent"
+                        Padding="16,4">
+                        <Entry
+                            x:Name="PasswordEntry"
+                            Placeholder="Password"
+                            PlaceholderColor="#aaa"
+                            TextColor="White"
+                            BackgroundColor="Transparent"
+                            IsPassword="True"/>
+                    </Border>
+
+                    <!-- Error -->
+                    <Label
+                        x:Name="ErrorLabel"
+                        TextColor="Red"
+                        FontSize="9"
+                        IsVisible="False"
+                        HorizontalOptions="Center"/>
+
+                    <!-- Sign In Button -->
+                    <Button
+                        Text="Sign In"
+                        Style="{StaticResource PixelButton}"
+                        BackgroundColor="{StaticResource LightGreen}"
+                        Clicked="OnLoginClicked"
+                        Margin="0,8,0,0"/>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Register Link -->
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Margin="0,16,0,0"
+                Spacing="4">
+                <Label
+                    Text="Don't have an account?"
+                    FontSize="11"
+                    TextColor="{StaticResource TextDark}"/>
+                <Label
+                    Text="Register!"
+                    FontSize="11"
+                    TextColor="{StaticResource LightGreen}"
+                    TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRegisterTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

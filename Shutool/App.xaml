@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shutool.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Colors -->
+            <Color x:Key="PrimaryGreen">#3D5A2A</Color>
+            <Color x:Key="LightGreen">#6ABF4B</Color>
+            <Color x:Key="YellowAccent">#F5C518</Color>
+            <Color x:Key="BlueAccent">#4BBEF5</Color>
+            <Color x:Key="PageBackground">#F5F0E8</Color>
+            <Color x:Key="CardBackground">#FFFFFF</Color>
+            <Color x:Key="DarkCard">#3D5A2A</Color>
+            <Color x:Key="TextDark">#1A1A1A</Color>
+            <Color x:Key="TextLight">#FFFFFF</Color>
+            <Color x:Key="InputBackground">#EDE8D8</Color>
+
+            <!-- Pixel Font Style -->
+            <Style x:Key="PixelLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="PressStart2P"/>
+                <Setter Property="TextColor" Value="{StaticResource TextDark}"/>
+            </Style>
+
+            <Style x:Key="PixelButton" TargetType="Button">
+                <Setter Property="FontFamily" Value="PressStart2P"/>
+                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="HeightRequest" Value="45"/>
+                <Setter Property="TextColor" Value="{StaticResource TextLight}"/>
+            </Style>
+
+            <!-- Input Style -->
+            <Style x:Key="RoundedEntry" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{StaticResource InputBackground}"/>
+                <Setter Property="TextColor" Value="{StaticResource TextDark}"/>
+                <Setter Property="PlaceholderColor" Value="#888"/>
+                <Setter Property="HeightRequest" Value="50"/>
+                <Setter Property="Margin" Value="0,4"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
