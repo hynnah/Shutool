@@ -34,5 +34,6 @@ public class PriorityRequestModel : BaseModel
     public DateTimeOffset CreatedAt { get; set; }
 
     // Display helper — not a DB column
+    [Newtonsoft.Json.JsonIgnore]
     public string StatusText { get; set; } = string.Empty;
 }

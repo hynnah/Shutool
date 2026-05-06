@@ -32,13 +32,11 @@ public partial class RiderMainPage : ContentPage
         {
             var userId = _supabaseService.CurrentUserId;
             _currentUser = await _supabaseService.Client
-                .From<UserModel>()
-                .Where(u => u.Id == userId)
-                .Single();
+                .From<UserModel>().Where(u => u.Id == userId).Single();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", "Could not load user data.", "OK");
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 
@@ -47,40 +45,27 @@ public partial class RiderMainPage : ContentPage
         try
         {
             var drivers = await _supabaseService.Client
-                .From<UserModel>()
-                .Where(u => u.Role == "driver")
-                .Get();
-
+                .From<UserModel>().Where(u => u.Role == "driver").Get();
             ShuttlePicker.Items.Clear();
-
             if (drivers?.Models != null)
-            {
                 foreach (var driver in drivers.Models)
-                {
                     if (!string.IsNullOrEmpty(driver.ShuttleNumber))
                         ShuttlePicker.Items.Add(driver.ShuttleNumber);
-                }
-            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // silently fail — picker just stays empty
+            await DisplayAlert("Shuttle Load Error", ex.Message, "OK");
         }
     }
 
     private void UpdateLimitLabel()
     {
         if (_currentUser == null) return;
-
-        // Reset count if last request was not today
         var isToday = _currentUser.LastRequestDate?.Date == DateTime.UtcNow.Date;
         var usedToday = isToday ? _currentUser.DailyRequestCount : 0;
         var remaining = DailyLimit - usedToday;
-
         LimitLabel.Text = $"Requests remaining today: {remaining}/{DailyLimit}";
-        LimitLabel.TextColor = remaining == 0
-            ? Color.FromArgb("#FF4444")
-            : Color.FromArgb("#3D5A2A");
+        LimitLabel.TextColor = remaining == 0 ? Color.FromArgb("#FF4444") : Color.FromArgb("#3D5A2A");
     }
 
     private void OnPriorityTabClicked(object sender, EventArgs e)
@@ -112,40 +97,29 @@ public partial class RiderMainPage : ContentPage
                 .Where(r => r.RiderId == userId)
                 .Order(r => r.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                 .Get();
-
             var items = response?.Models ?? new List<PriorityRequestModel>();
-
-            // Add display property
             foreach (var item in items)
                 item.StatusText = item.Handled ? "Handled" : "Pending";
-
             HistoryCollection.ItemsSource = items;
             EmptyHistoryLabel.IsVisible = items.Count == 0;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", "Could not load history.", "OK");
+            await DisplayAlert("History Error", ex.Message, "OK");
         }
     }
 
     private async void OnActionButtonClicked(object sender, EventArgs e)
     {
-        if (_isHistoryTab)
-        {
-            await LoadHistoryAsync();
-            return;
-        }
-
+        if (_isHistoryTab) { await LoadHistoryAsync(); return; }
         await SendPriorityRequestAsync();
     }
 
     private async Task SendPriorityRequestAsync()
     {
         ErrorLabel.IsVisible = false;
-
         if (_currentUser == null) return;
 
-        // Check daily limit
         var isToday = _currentUser.LastRequestDate?.Date == DateTime.UtcNow.Date;
         var usedToday = isToday ? _currentUser.DailyRequestCount : 0;
 
@@ -156,7 +130,6 @@ public partial class RiderMainPage : ContentPage
             return;
         }
 
-        // Validate shuttle
         var shuttleNumber = ShuttlePicker.SelectedItem?.ToString();
         if (string.IsNullOrEmpty(shuttleNumber))
         {
@@ -167,7 +140,6 @@ public partial class RiderMainPage : ContentPage
 
         try
         {
-            // Insert request
             var request = new PriorityRequestModel
             {
                 RiderId = _currentUser.Id,
@@ -179,46 +151,36 @@ public partial class RiderMainPage : ContentPage
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
-            await _supabaseService.Client
-                .From<PriorityRequestModel>()
-                .Insert(request);
+            await _supabaseService.Client.From<PriorityRequestModel>().Insert(request);
 
-            // Update daily count
             var newCount = isToday ? usedToday + 1 : 1;
             await _supabaseService.Client
-                .From<UserModel>()
-                .Where(u => u.Id == _currentUser.Id)
+                .From<UserModel>().Where(u => u.Id == _currentUser.Id)
                 .Set(u => u.DailyRequestCount, newCount)
                 .Set(u => u.LastRequestDate, DateTimeOffset.UtcNow)
                 .Update();
 
             _currentUser.DailyRequestCount = newCount;
             _currentUser.LastRequestDate = DateTimeOffset.UtcNow;
-
             NoteEditor.Text = string.Empty;
             UpdateLimitLabel();
-
             await DisplayAlert("Sent!", "Your priority request has been sent.", "OK");
         }
         catch (Exception ex)
         {
-            ErrorLabel.Text = "Failed to send request. Try again.";
+            ErrorLabel.Text = ex.Message;
             ErrorLabel.IsVisible = true;
         }
     }
 
     private async void OnSettingsClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new ProfilePage(_supabaseService));
-    }
+        => await Navigation.PushAsync(new ProfilePage(_supabaseService));
 
     private async void OnLogoutClicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Log Out", "Are you sure you want to log out?", "Yes", "No");
+        bool confirm = await DisplayAlert("Log Out", "Are you sure?", "Yes", "No");
         if (!confirm) return;
-
         await _supabaseService.Client.Auth.SignOut();
-        Application.Current!.Windows[0].Page =
-            new NavigationPage(new LoginPage(_supabaseService));
+        Application.Current!.Windows[0].Page = new NavigationPage(new LoginPage(_supabaseService));
     }
 }

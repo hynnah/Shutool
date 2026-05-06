@@ -33,73 +33,78 @@
                     Clicked="OnLogoutClicked"/>
             </Grid>
 
-            <!-- Profile Card -->
-            <Border
-                Grid.Row="1"
-                BackgroundColor="{StaticResource DarkCard}"
-                StrokeShape="RoundRectangle 24"
-                Stroke="Transparent"
-                Padding="24"
-                Margin="0,60,0,0">
+            <!-- Profile Card + Avatar Grid -->
+            <Grid Grid.Row="1" Margin="0,45,0,0">
 
-                <VerticalStackLayout Spacing="12">
+                <!-- Card -->
+                <Border
+                    BackgroundColor="{StaticResource DarkCard}"
+                    StrokeShape="RoundRectangle 24"
+                    Stroke="Transparent"
+                    Padding="24,60,24,24"
+                    Margin="0,45,0,0">
 
-                    <!-- Avatar -->
-                    <Border
-                        BackgroundColor="White"
-                        StrokeShape="Ellipse"
-                        Stroke="Transparent"
-                        HeightRequest="90"
-                        WidthRequest="90"
-                        HorizontalOptions="Center"
-                        Margin="0,-70,0,8">
-                        <Image
-                            Source="profiles.png"
-                            HeightRequest="80"
-                            WidthRequest="80"
-                            Aspect="AspectFit"/>
-                    </Border>
+                    <VerticalStackLayout Spacing="12">
 
-                    <!-- Username -->
-                    <Label Text="Username" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
-                    <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
-                        <Entry x:Name="NameEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}"/>
-                    </Border>
+                        <!-- Username -->
+                        <Label Text="Username" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
+                        <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="NameEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}"/>
+                        </Border>
 
-                    <!-- Email -->
-                    <Label Text="Email" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
-                    <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
-                        <Entry x:Name="EmailEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsReadOnly="True"/>
-                    </Border>
+                        <!-- Email -->
+                        <Label Text="Email" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
+                        <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="EmailEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsReadOnly="True"/>
+                        </Border>
 
-                    <!-- Change Password Section -->
-                    <Label Text="New Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White" Margin="0,8,0,0"/>
-                    <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
-                        <Entry x:Name="NewPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True" Placeholder="Leave blank to keep current" PlaceholderColor="#888"/>
-                    </Border>
+                        <!-- New Password -->
+                        <Label Text="New Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White" Margin="0,8,0,0"/>
+                        <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="NewPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True" Placeholder="Leave blank to keep current" PlaceholderColor="#888"/>
+                        </Border>
 
-                    <Label Text="Confirm Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
-                    <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
-                        <Entry x:Name="ConfirmPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True" Placeholder="Leave blank to keep current" PlaceholderColor="#888"/>
-                    </Border>
+                        <!-- Confirm Password -->
+                        <Label Text="Confirm Password" Style="{StaticResource PixelLabel}" FontSize="9" TextColor="White"/>
+                        <Border BackgroundColor="{StaticResource InputBackground}" StrokeShape="RoundRectangle 12" Stroke="Transparent" Padding="12,4">
+                            <Entry x:Name="ConfirmPasswordEntry" BackgroundColor="Transparent" TextColor="{StaticResource TextDark}" IsPassword="True" Placeholder="Leave blank to keep current" PlaceholderColor="#888"/>
+                        </Border>
 
-                    <!-- Feedback -->
-                    <Label
-                        x:Name="FeedbackLabel"
-                        FontSize="9"
-                        IsVisible="False"
-                        HorizontalOptions="Center"/>
+                        <!-- Feedback -->
+                        <Label
+                            x:Name="FeedbackLabel"
+                            FontSize="9"
+                            IsVisible="False"
+                            HorizontalOptions="Center"/>
 
-                    <!-- Save Button -->
-                    <Button
-                        Text="Edit Profile"
-                        Style="{StaticResource PixelButton}"
-                        BackgroundColor="{StaticResource LightGreen}"
-                        Clicked="OnSaveClicked"
-                        Margin="0,8,0,0"/>
+                        <!-- Save Button -->
+                        <Button
+                            Text="Edit Profile"
+                            Style="{StaticResource PixelButton}"
+                            BackgroundColor="{StaticResource LightGreen}"
+                            Clicked="OnSaveClicked"
+                            Margin="0,8,0,0"/>
 
-                </VerticalStackLayout>
-            </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Avatar (overlaps top of card) -->
+                <Border
+                    BackgroundColor="White"
+                    StrokeShape="Ellipse"
+                    Stroke="Transparent"
+                    HeightRequest="90"
+                    WidthRequest="90"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start">
+                    <Image
+                        Source="profiles.png"
+                        HeightRequest="80"
+                        WidthRequest="80"
+                        Aspect="AspectFit"/>
+                </Border>
+
+            </Grid>
 
         </Grid>
     </ScrollView>

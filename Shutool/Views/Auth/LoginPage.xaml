@@ -13,7 +13,7 @@
 
             <!-- Logo -->
             <Image
-                Source="shutoollogo.png"
+                Source="logo.png"
                 HeightRequest="120"
                 HorizontalOptions="Center"
                 Margin="0,60,0,8"/>
