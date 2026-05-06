@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shutool Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --green-dark: #3D5A2A;
+            --green-mid: #4E7A35;
+            --green-light: #6ABF4B;
+            --yellow: #F5C518;
+            --blue: #4BBEF5;
+            --bg: #F5F0E8;
+            --card-bg: #FFFFFF;
+            --dark-card: #3D5A2A;
+            --text-dark: #1A1A1A;
+            --text-light: #FFFFFF;
+            --input-bg: #EDE8D8;
+            --red: #E53935;
+            --orange: #F57C00;
+            --pixel-border: 3px solid var(--green-dark);
+            --sidebar-w: 220px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: var(--bg);
+            color: var(--text-dark);
+            font-size: 10px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── PIXEL HELPERS ── */
+        .pixel-box {
+            border: 3px solid var(--green-dark);
+            box-shadow: 4px 4px 0 var(--green-dark);
+            border-radius: 0;
+        }
+        .pixel-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            border: 3px solid var(--green-dark);
+            box-shadow: 3px 3px 0 var(--green-dark);
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 0;
+            transition: all 0.05s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .pixel-btn:active { box-shadow: 1px 1px 0 var(--green-dark); transform: translate(2px,2px); }
+        .btn-green { background: var(--green-light); color: #fff; border-color: var(--green-dark); box-shadow: 3px 3px 0 var(--green-dark); }
+        .btn-red { background: var(--red); color: #fff; border-color: #8B0000; box-shadow: 3px 3px 0 #8B0000; }
+        .btn-yellow { background: var(--yellow); color: var(--green-dark); border-color: #B8860B; box-shadow: 3px 3px 0 #B8860B; }
+        .btn-blue { background: var(--blue); color: var(--green-dark); border-color: #1565C0; box-shadow: 3px 3px 0 #1565C0; }
+        .btn-outline { background: transparent; color: var(--green-dark); border-color: var(--green-dark); box-shadow: 3px 3px 0 var(--green-dark); }
+
+        .badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 7px;
+            padding: 3px 8px;
+            border-radius: 0;
+            border: 2px solid;
+            display: inline-block;
+        }
+        .badge-green { background: #E8F5E9; color: #1B5E20; border-color: #388E3C; }
+        .badge-red { background: #FFEBEE; color: #B71C1C; border-color: #C62828; }
+        .badge-yellow { background: #FFF9C4; color: #7B5E00; border-color: #F9A825; }
+        .badge-blue { background: #E3F2FD; color: #0D47A1; border-color: #1565C0; }
+
+        /* ── LAYOUT ── */
+        #app { display: flex; min-height: 100vh; }
+
+        /* ── SIDEBAR ── */
+        #sidebar {
+            width: var(--sidebar-w);
+            background: var(--green-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            border-right: 4px solid #2A3E1B;
+            z-index: 100;
+        }
+        .sidebar-logo {
+            padding: 20px 16px;
+            border-bottom: 3px solid #2A3E1B;
+            text-align: center;
+        }
+        .sidebar-logo .logo-title {
+            font-size: 14px;
+            color: var(--yellow);
+            display: block;
+            margin-bottom: 4px;
+        }
+        .sidebar-logo .logo-sub {
+            font-size: 7px;
+            color: #9ABA7A;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+        }
+        .sidebar-logo .logo-icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+        .nav-section {
+            font-size: 7px;
+            color: #7A9A5A;
+            padding: 10px 16px 4px;
+            letter-spacing: 1px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #C8E6A0;
+            font-size: 8px;
+            border-left: 3px solid transparent;
+            transition: all 0.1s;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .nav-item.active {
+            background: rgba(106,191,75,0.2);
+            border-left-color: var(--green-light);
+            color: var(--green-light);
+        }
+        .nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+        .sidebar-user {
+            padding: 14px 16px;
+            border-top: 3px solid #2A3E1B;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 34px; height: 34px;
+            background: var(--yellow);
+            border: 2px solid #B8860B;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            color: var(--green-dark);
+            flex-shrink: 0;
+        }
+        .user-info { overflow: hidden; }
+        .user-name { font-size: 8px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 7px; color: #9ABA7A; margin-top: 2px; }
+
+        /* ── MAIN ── */
+        #main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        #topbar {
+            background: var(--card-bg);
+            border-bottom: 3px solid var(--green-dark);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0; z-index: 50;
+            box-shadow: 0 3px 0 var(--green-dark);
+        }
+        .topbar-title { font-size: 12px; color: var(--green-dark); }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .topbar-time { font-size: 8px; color: #888; font-family: 'VT323', monospace; font-size: 16px; }
+
+        /* ── PAGE CONTENT ── */
+        .page { display: none; padding: 24px; flex: 1; }
+        .page.active { display: block; }
+
+        /* ── STAT CARDS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 3px solid var(--green-dark);
+            box-shadow: 4px 4px 0 var(--green-dark);
+            padding: 16px;
+        }
+        .stat-icon { font-size: 22px; margin-bottom: 10px; }
+        .stat-val { font-size: 22px; color: var(--green-dark); margin-bottom: 4px; font-family: 'VT323', monospace; }
+        .stat-label { font-size: 7px; color: #666; }
+        .stat-delta { font-size: 7px; margin-top: 6px; }
+        .delta-up { color: var(--green-light); }
+        .delta-down { color: var(--red); }
+
+        /* ── SECTION CARD ── */
+        .section-card {
+            background: var(--card-bg);
+            border: 3px solid var(--green-dark);
+            box-shadow: 4px 4px 0 var(--green-dark);
+            margin-bottom: 20px;
+        }
+        .section-header {
+            background: var(--green-dark);
+            color: var(--text-light);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 9px;
+        }
+        .section-body { padding: 16px; }
+
+        /* ── TABLE ── */
+        table { width: 100%; border-collapse: collapse; font-size: 8px; }
+        th {
+            background: var(--input-bg);
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 2px solid var(--green-dark);
+            color: var(--green-dark);
+            font-size: 7px;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 8px 10px; border-bottom: 1px solid #E0D8C8; vertical-align: middle; }
+        tr:hover td { background: #FAF6EE; }
+        tr:last-child td { border-bottom: none; }
+
+        /* ── FORMS ── */
+        .form-group { margin-bottom: 14px; }
+        .form-label { font-size: 8px; color: var(--green-dark); margin-bottom: 6px; display: block; }
+        .form-control {
+            width: 100%;
+            background: var(--input-bg);
+            border: 2px solid var(--green-dark);
+            padding: 9px 12px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            color: var(--text-dark);
+            outline: none;
+            border-radius: 0;
+        }
+        .form-control:focus { border-color: var(--green-light); box-shadow: 2px 2px 0 var(--green-light); }
+        select.form-control { cursor: pointer; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(30,50,20,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--bg);
+            border: 4px solid var(--green-dark);
+            box-shadow: 6px 6px 0 var(--green-dark);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            background: var(--green-dark);
+            color: var(--text-light);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 9px;
+            position: sticky; top: 0;
+        }
+        .modal-close {
+            background: none; border: none; color: #fff;
+            font-size: 16px; cursor: pointer;
+            font-family: monospace; padding: 0 4px;
+        }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 2px solid var(--green-dark);
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+
+        /* ── ALERT ── */
+        .alert {
+            padding: 10px 14px;
+            border: 2px solid;
+            font-size: 8px;
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .alert-success { background: #E8F5E9; border-color: #388E3C; color: #1B5E20; }
+        .alert-danger { background: #FFEBEE; border-color: #C62828; color: #B71C1C; }
+        .alert-warning { background: #FFF9C4; border-color: #F9A825; color: #7B5E00; }
+        .alert-info { background: #E3F2FD; border-color: #1565C0; color: #0D47A1; }
+
+        /* ── SEARCH BAR ── */
+        .search-bar {
+            display: flex; gap: 8px; margin-bottom: 14px;
+        }
+        .search-bar .form-control { flex: 1; }
+
+        /* ── REQUESTS ── */
+        .req-card {
+            background: var(--card-bg);
+            border: 2px solid var(--green-dark);
+            box-shadow: 3px 3px 0 var(--green-dark);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .req-avatar {
+            width: 38px; height: 38px;
+            background: var(--green-dark);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--yellow); font-size: 14px; flex-shrink: 0;
+        }
+        .req-info { flex: 1; }
+        .req-name { font-size: 9px; color: var(--green-dark); margin-bottom: 4px; }
+        .req-meta { font-size: 7px; color: #666; }
+        .req-shuttle {
+            background: var(--yellow);
+            border: 2px solid #B8860B;
+            padding: 4px 10px;
+            font-size: 8px;
+            color: var(--green-dark);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* ── DASHBOARD MINI CHART ── */
+        .mini-bars {
+            display: flex; align-items: flex-end; gap: 4px;
+            height: 60px; margin-top: 8px;
+        }
+        .mini-bar {
+            flex: 1;
+            background: var(--green-light);
+            border: 1px solid var(--green-dark);
+            min-height: 4px;
+            position: relative;
+        }
+        .mini-bar.yellow { background: var(--yellow); }
+        .mini-bar.blue { background: var(--blue); }
+        .mini-bar.red { background: var(--red); }
+        .chart-labels {
+            display: flex; gap: 4px; margin-top: 4px;
+            font-size: 6px; color: #888; font-family: 'VT323', monospace; font-size: 11px;
+        }
+        .chart-labels span { flex: 1; text-align: center; }
+
+        /* ── LOGIN PAGE ── */
+        #login-page {
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg);
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: var(--card-bg);
+            border: 4px solid var(--green-dark);
+            box-shadow: 6px 6px 0 var(--green-dark);
+            width: 380px;
+            padding: 32px 28px;
+        }
+        .login-header { text-align: center; margin-bottom: 28px; }
+        .login-logo { font-size: 22px; color: var(--green-dark); display: block; margin-bottom: 6px; }
+        .login-sub { font-size: 7px; color: #666; }
+        .login-badge {
+            display: inline-block;
+            background: var(--yellow);
+            border: 2px solid #B8860B;
+            padding: 3px 10px;
+            font-size: 7px;
+            color: var(--green-dark);
+            margin-bottom: 20px;
+        }
+
+        /* ── PIXEL DECORATIONS ── */
+        .pixel-divider {
+            height: 3px;
+            background: repeating-linear-gradient(90deg, var(--green-dark) 0 8px, transparent 8px 12px);
+            margin: 16px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 8px;
+        }
+        .empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: var(--green-dark);
+            color: #fff;
+            padding: 12px 18px;
+            border: 3px solid var(--green-light);
+            box-shadow: 4px 4px 0 var(--green-light);
+            font-size: 8px;
+            z-index: 9999;
+            display: none;
+            max-width: 280px;
+        }
+
+        /* ── TABS ── */
+        .tab-bar {
+            display: flex;
+            border-bottom: 3px solid var(--green-dark);
+            margin-bottom: 16px;
+        }
+        .tab-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            padding: 8px 14px;
+            background: var(--input-bg);
+            border: none;
+            border-right: 2px solid var(--green-dark);
+            cursor: pointer;
+            color: #666;
+        }
+        .tab-btn.active { background: var(--green-dark); color: var(--text-light); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-100%); }
+            #main { margin-left: 0; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN PAGE ══════════════ -->
+<div id="login-page">
+    <div class="login-box">
+        <div class="login-header">
+            <span class="login-logo">🚌 Shutool</span>
+            <div class="login-badge">ADMIN PANEL</div>
+            <p class="login-sub">SKIP THE WAIT, DON'T BE LATE.</p>
+        </div>
+        <div id="login-error" class="alert alert-danger" style="display:none">
+            <span>⚠</span> <span id="login-error-msg">Invalid credentials.</span>
+        </div>
+        <div class="form-group">
+            <label class="form-label">ADMIN EMAIL</label>
+            <input type="email" id="login-email" class="form-control" placeholder="admin@shutool.com" value="admin@gmail.com"/>
+        </div>
+        <div class="form-group">
+            <label class="form-label">PASSWORD</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" value="password"/>
+        </div>
+        <div class="pixel-divider"></div>
+        <button class="pixel-btn btn-green" style="width:100%;margin-top:8px;padding:12px;" onclick="doLogin()">
+            ▶ SIGN IN
+        </button>
+        <p style="text-align:center;margin-top:14px;font-size:7px;color:#999;">SHUTOOL ADMIN v1.0 · AUTHORIZED ACCESS ONLY</p>
+    </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">🚌</span>
+            <span class="logo-title">SHUTOOL</span>
+            <span class="logo-sub">ADMIN PANEL v1.0</span>
+        </div>
+
+        <nav>
+            <div class="nav-section">MAIN</div>
+            <div class="nav-item active" onclick="showPage('dashboard',this)">
+                <span class="nav-icon">📊</span> Dashboard
+            </div>
+
+            <div class="nav-section">USERS</div>
+            <div class="nav-item" onclick="showPage('riders',this)">
+                <span class="nav-icon">🧍</span> Riders
+            </div>
+            <div class="nav-item" onclick="showPage('drivers',this)">
+                <span class="nav-icon">🚗</span> Drivers
+            </div>
+            <div class="nav-item" onclick="showPage('create-driver',this)">
+                <span class="nav-icon">➕</span> Create Driver
+            </div>
+
+            <div class="nav-section">MONITORING</div>
+            <div class="nav-item" onclick="showPage('requests',this)">
+                <span class="nav-icon">⚡</span> Priority Requests
+            </div>
+            <div class="nav-item" onclick="showPage('shuttles',this)">
+                <span class="nav-icon">🚌</span> Shuttles
+            </div>
+
+            <div class="nav-section">SYSTEM</div>
+            <div class="nav-item" onclick="showPage('suspended',this)">
+                <span class="nav-icon">🚫</span> Suspended Accounts
+            </div>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+                <div class="user-name" id="admin-name-sidebar">Admin</div>
+                <div class="user-role">SYSTEM ADMIN</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main">
+        <!-- TOPBAR -->
+        <div id="topbar">
+            <div class="topbar-title" id="page-title">📊 DASHBOARD</div>
+            <div class="topbar-right">
+                <span class="topbar-time" id="clock">--:--:--</span>
+                <button class="pixel-btn btn-outline" style="font-size:7px;padding:6px 10px;" onclick="doLogout()">LOGOUT ▶</button>
+            </div>
+        </div>
+
+        <!-- ── DASHBOARD ── -->
+        <div id="page-dashboard" class="page active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🧍</div>
+                    <div class="stat-val" id="stat-riders">--</div>
+                    <div class="stat-label">TOTAL RIDERS</div>
+                    <div class="stat-delta delta-up">▲ Active accounts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚗</div>
+                    <div class="stat-val" id="stat-drivers">--</div>
+                    <div class="stat-label">TOTAL DRIVERS</div>
+                    <div class="stat-delta delta-up">▲ On duty today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-val" id="stat-pending">--</div>
+                    <div class="stat-label">PENDING REQUESTS</div>
+                    <div class="stat-delta delta-down" id="pending-delta">● Awaiting handling</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-val" id="stat-handled">--</div>
+                    <div class="stat-label">HANDLED TODAY</div>
+                    <div class="stat-delta delta-up">▲ Completed</div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+                <!-- Live Requests Feed -->
+                <div class="section-card">
+                    <div class="section-header">
+                        ⚡ LIVE PRIORITY REQUESTS
+                        <button class="pixel-btn btn-green" style="font-size:7px;padding:4px 8px;" onclick="loadDashboard()">↺ REFRESH</button>
+                    </div>
+                    <div class="section-body" id="dash-requests-list" style="max-height:320px;overflow-y:auto;">
+                        <div class="empty-state"><span class="empty-icon">📡</span>Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Panel -->
+                <div>
+                    <div class="section-card">
+                        <div class="section-header">🚌 SHUTTLE ACTIVITY</div>
+                        <div class="section-body" id="dash-shuttle-stats">
+                            <div class="empty-state"><span class="empty-icon">📡</span>Loading...</div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-header">🚫 SUSPENDED ACCOUNTS</div>
+                        <div class="section-body">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span style="font-size:8px;color:#666;" id="dash-suspended-count">-- suspended accounts</span>
+                                <button class="pixel-btn btn-outline" style="font-size:7px;padding:5px 8px;" onclick="showPage('suspended',document.querySelector('[onclick*=suspended]'))">VIEW ALL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── RIDERS ── -->
+        <div id="page-riders" class="page">
+            <div class="section-card">
+                <div class="section-header">
+                    🧍 RIDER ACCOUNTS
+                    <span id="riders-count" class="badge badge-blue">-- riders</span>
+                </div>
+                <div class="section-body">
+                    <div class="search-bar">
+                        <input type="text" class="form-control" id="rider-search" placeholder="Search by name or email..." oninput="filterRiders()"/>
+                        <select class="form-control" style="width:140px;" id="rider-filter" onchange="filterRiders()">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                    <div id="riders-table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>NAME</th>
+                                <th>EMAIL</th>
+                                <th>REQUESTS TODAY</th>
+                                <th>STATUS</th>
+                                <th>JOINED</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                            </thead>
+                            <tbody id="riders-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Loading riders...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── DRIVERS ── -->
+        <div id="page-drivers" class="page">
+            <div class="section-card">
+                <div class="section-header">
+                    🚗 DRIVER ACCOUNTS
+                    <button class="pixel-btn btn-green" style="font-size:7px;padding:5px 10px;" onclick="showPage('create-driver',document.querySelector('[onclick*=create-driver]'))">+ CREATE DRIVER</button>
+                </div>
+                <div class="section-body">
+                    <div class="search-bar">
+                        <input type="text" class="form-control" id="driver-search" placeholder="Search by name, email or shuttle..." oninput="filterDrivers()"/>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>EMAIL</th>
+                            <th>SHUTTLE #</th>
+                            <th>STATUS</th>
+                            <th>JOINED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                        </thead>
+                        <tbody id="drivers-tbody">
+                        <tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Loading drivers...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── CREATE DRIVER ── -->
+        <div id="page-create-driver" class="page">
+            <div style="max-width:540px;margin:0 auto;">
+                <div class="section-card">
+                    <div class="section-header">➕ CREATE DRIVER ACCOUNT</div>
+                    <div class="section-body">
+                        <div id="create-driver-alert" style="display:none;"></div>
+                        <div class="alert alert-info" style="margin-bottom:16px;">
+                            <span>ℹ</span>
+                            <span>Only admins can create driver accounts. A temporary password will be set — provide it to the driver so they can log in and change it.</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">FULL NAME *</label>
+                                <input type="text" id="new-driver-name" class="form-control" placeholder="e.g. Juan dela Cruz"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">EMAIL ADDRESS *</label>
+                                <input type="email" id="new-driver-email" class="form-control" placeholder="driver@example.com"/>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">SHUTTLE NUMBER *</label>
+                                <input type="text" id="new-driver-shuttle" class="form-control" placeholder="e.g. 01, 02, A1"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">TEMP PASSWORD *</label>
+                                <input type="text" id="new-driver-password" class="form-control" placeholder="Min 6 characters"/>
+                            </div>
+                        </div>
+                        <div class="pixel-divider"></div>
+                        <div style="background:#FFF9C4;border:2px solid #F9A825;padding:10px 12px;font-size:7px;color:#7B5E00;margin-bottom:16px;">
+                            ⚠ IMPORTANT: After creation, give the driver their email and temp password. Advise them to change it immediately after first login.
+                        </div>
+                        <button class="pixel-btn btn-green" style="width:100%;padding:12px;" onclick="createDriver()">
+                            ▶ CREATE DRIVER ACCOUNT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PRIORITY REQUESTS ── -->
+        <div id="page-requests" class="page">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('req-pending',this)">⚡ PENDING</button>
+                <button class="tab-btn" onclick="switchTab('req-handled',this)">✅ HANDLED</button>
+                <button class="tab-btn" onclick="switchTab('req-all',this)">📋 ALL REQUESTS</button>
+            </div>
+
+            <!-- Pending -->
+            <div id="tab-req-pending" class="tab-panel active">
+                <div class="section-card">
+                    <div class="section-header">
+                        ⚡ PENDING PRIORITY REQUESTS
+                        <button class="pixel-btn btn-green" style="font-size:7px;padding:4px 8px;" onclick="loadRequests()">↺ REFRESH</button>
+                    </div>
+                    <div class="section-body" id="pending-list">
+                        <div class="empty-state"><span class="empty-icon">📡</span>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handled -->
+            <div id="tab-req-handled" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">✅ HANDLED REQUESTS</div>
+                    <div class="section-body">
+                        <table>
+                            <thead>
+                            <tr><th>RIDER</th><th>SHUTTLE</th><th>NOTE</th><th>REQUESTED</th><th>HANDLED AT</th></tr>
+                            </thead>
+                            <tbody id="handled-tbody">
+                            <tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All -->
+            <div id="tab-req-all" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        📋 ALL PRIORITY REQUESTS
+                        <div style="display:flex;gap:6px;">
+                            <select class="form-control" id="req-shuttle-filter" style="width:120px;font-size:7px;padding:4px;" onchange="loadAllRequests()">
+                                <option value="">All Shuttles</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <table>
+                            <thead>
+                            <tr><th>RIDER</th><th>EMAIL</th><th>SHUTTLE</th><th>NOTE</th><th>STATUS</th><th>DATE</th></tr>
+                            </thead>
+                            <tbody id="all-req-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SHUTTLES ── -->
+        <div id="page-shuttles" class="page">
+            <div class="section-card">
+                <div class="section-header">
+                    🚌 SHUTTLE OVERVIEW
+                    <span id="shuttle-count" class="badge badge-green">-- shuttles</span>
+                </div>
+                <div class="section-body">
+                    <div id="shuttles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+                        <div class="empty-state"><span class="empty-icon">📡</span>Loading shuttles...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SUSPENDED ── -->
+        <div id="page-suspended" class="page">
+            <div class="section-card">
+                <div class="section-header">🚫 SUSPENDED / DEACTIVATED ACCOUNTS</div>
+                <div class="section-body">
+                    <div class="alert alert-warning">
+                        <span>⚠</span>
+                        <span>Suspended accounts cannot log in. Restore them using the RESTORE button.</span>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr><th>NAME</th><th>EMAIL</th><th>ROLE</th><th>SUSPENDED BY</th><th>DATE</th><th>ACTIONS</th></tr>
+                        </thead>
+                        <tbody id="suspended-tbody">
+                        <tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No suspended accounts.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- View User Modal -->
+<div class="modal-overlay" id="modal-user">
+    <div class="modal">
+        <div class="modal-header">
+            👤 USER DETAILS
+            <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+        </div>
+        <div class="modal-body" id="modal-user-body"></div>
+        <div class="modal-footer">
+            <button class="pixel-btn btn-outline" onclick="closeModal('modal-user')">CLOSE</button>
+            <button class="pixel-btn btn-red" id="modal-suspend-btn" onclick="suspendUserFromModal()">🚫 SUSPEND</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Shuttle Modal -->
+<div class="modal-overlay" id="modal-edit-driver">
+    <div class="modal">
+        <div class="modal-header">
+            ✏ EDIT DRIVER / SHUTTLE
+            <button class="modal-close" onclick="closeModal('modal-edit-driver')">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-driver-id"/>
+            <div class="form-group">
+                <label class="form-label">FULL NAME</label>
+                <input type="text" id="edit-driver-name" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">SHUTTLE NUMBER</label>
+                <input type="text" id="edit-driver-shuttle" class="form-control"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="pixel-btn btn-outline" onclick="closeModal('modal-edit-driver')">CANCEL</button>
+            <button class="pixel-btn btn-green" onclick="saveDriverEdit()">💾 SAVE</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Suspend Modal -->
+<div class="modal-overlay" id="modal-confirm">
+    <div class="modal">
+        <div class="modal-header">
+            ⚠ CONFIRM ACTION
+            <button class="modal-close" onclick="closeModal('modal-confirm')">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:9px;line-height:1.8;" id="confirm-msg">Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="pixel-btn btn-outline" onclick="closeModal('modal-confirm')">CANCEL</button>
+            <button class="pixel-btn btn-red" id="confirm-ok-btn">CONFIRM</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+    // ═══════════════════════════════════════════════
+    //   CONFIGURATION — replace with your values
+    // ═══════════════════════════════════════════════
+    const SUPABASE_URL = 'https://fmqpddlcqehawmdjsfem.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcXBkZGxjcWVoYXdtZGpzZmVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3OTIxOTcsImV4cCI6MjA5MzM2ODE5N30.GF8YnfYVNVPraWdOGnHYgwLWmrR-grBrvYhfpBajAMc';
+
+    // ═══════════════════════════════════════════════
+    //   STATE
+    // ═══════════════════════════════════════════════
+    let session = null;
+    let allRiders = [];
+    let allDrivers = [];
+    let currentModalUserId = null;
+    let currentModalUserSuspended = false;
+
+    // ═══════════════════════════════════════════════
+    //   API HELPERS
+    // ═══════════════════════════════════════════════
+    async function api(path, opts = {}) {
+        const headers = {
+            'apikey': SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            ...(opts.headers || {})
+        };
+        if (session) headers['Authorization'] = 'Bearer ' + session.access_token;
+        const r = await fetch(SUPABASE_URL + path, { ...opts, headers });
+        const txt = await r.text();
+        try { return { ok: r.ok, status: r.status, data: JSON.parse(txt) }; }
+        catch { return { ok: r.ok, status: r.status, data: txt }; }
+    }
+
+    async function authApi(path, body) {
+        const r = await fetch(SUPABASE_URL + '/auth/v1' + path, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await r.json();
+        return { ok: r.ok, data };
+    }
+
+    // ═══════════════════════════════════════════════
+    //   CLOCK
+    // ═══════════════════════════════════════════════
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toLocaleTimeString('en-US', { hour12: false });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ═══════════════════════════════════════════════
+    //   TOAST
+    // ═══════════════════════════════════════════════
+    function toast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        t.textContent = (type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : '⚠ ') + msg;
+        t.style.display = 'block';
+        t.style.borderColor = type === 'success' ? 'var(--green-light)' : type === 'error' ? 'var(--red)' : 'var(--yellow)';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    // ═══════════════════════════════════════════════
+    //   MODAL
+    // ═══════════════════════════════════════════════
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ═══════════════════════════════════════════════
+    //   LOGIN / LOGOUT
+    // ═══════════════════════════════════════════════
+    async function doLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const pass = document.getElementById('login-password').value;
+        const errEl = document.getElementById('login-error');
+        const errMsg = document.getElementById('login-error-msg');
+        errEl.style.display = 'none';
+
+        if (!email || !pass) {
+            errMsg.textContent = 'Please fill in all fields.';
+            errEl.style.display = 'flex'; return;
+        }
+
+        try {
+            const res = await authApi('/token?grant_type=password', { email, password: pass });
+            if (!res.ok) {
+                errMsg.textContent = 'Invalid credentials. Try again.';
+                errEl.style.display = 'flex'; return;
+            }
+            session = res.data;
+
+            // Check role = admin
+            const userRes = await api(`/rest/v1/users?id=eq.${session.user.id}&select=*`);
+            if (!userRes.ok || !userRes.data.length || userRes.data[0].role !== 'admin') {
+                errMsg.textContent = 'Access denied. Admin accounts only.';
+                errEl.style.display = 'flex';
+                session = null; return;
+            }
+
+            const adminUser = userRes.data[0];
+            document.getElementById('admin-name-sidebar').textContent = adminUser.name || email;
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            loadDashboard();
+            loadRiders();
+            loadDrivers();
+            loadRequests();
+            loadShuttles();
+            loadSuspended();
+        } catch (e) {
+            errMsg.textContent = 'Connection error. Check Supabase config.';
+            errEl.style.display = 'flex';
+        }
+    }
+
+    async function doLogout() {
+        if (session) await api('/auth/v1/logout', { method: 'POST' });
+        session = null;
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('login-page').style.display = 'flex';
+    }
+
+    // ═══════════════════════════════════════════════
+    //   NAVIGATION
+    // ═══════════════════════════════════════════════
+    const pageTitles = {
+        dashboard: '📊 DASHBOARD',
+        riders: '🧍 RIDERS',
+        drivers: '🚗 DRIVERS',
+        'create-driver': '➕ CREATE DRIVER',
+        requests: '⚡ PRIORITY REQUESTS',
+        shuttles: '🚌 SHUTTLES',
+        suspended: '🚫 SUSPENDED ACCOUNTS'
+    };
+
+    function showPage(name, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        if (el) el.classList.add('active');
+        document.getElementById('page-title').textContent = pageTitles[name] || name;
+    }
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        btn.classList.add('active');
+        if (id === 'req-handled') loadHandledRequests();
+        if (id === 'req-all') loadAllRequests();
+    }
+
+    // ═══════════════════════════════════════════════
+    //   DASHBOARD
+    // ═══════════════════════════════════════════════
+    async function loadDashboard() {
+        try {
+            const [ridersR, driversR, pendingR, handledR] = await Promise.all([
+                api('/rest/v1/users?role=eq.rider&select=count', { headers: { Prefer: 'count=exact' } }),
+                api('/rest/v1/users?role=eq.driver&select=count', { headers: { Prefer: 'count=exact' } }),
+                api('/rest/v1/priority_requests?handled=eq.false&select=*,users!rider_id(name,email)'),
+                api('/rest/v1/priority_requests?handled=eq.true&select=count', { headers: { Prefer: 'count=exact' } })
+            ]);
+
+            // stat counts from headers or arrays
+            document.getElementById('stat-riders').textContent = ridersR.data?.length ?? '?';
+            document.getElementById('stat-drivers').textContent = driversR.data?.length ?? '?';
+            const pendingItems = pendingR.data || [];
+            document.getElementById('stat-pending').textContent = pendingItems.length;
+            document.getElementById('stat-handled').textContent = handledR.data?.length ?? '?';
+
+            // pending requests list
+            const pList = document.getElementById('dash-requests-list');
+            if (pendingItems.length === 0) {
+                pList.innerHTML = '<div class="empty-state"><span class="empty-icon">✅</span>No pending requests!</div>';
+            } else {
+                pList.innerHTML = pendingItems.slice(0,8).map(r => `
+        <div class="req-card">
+          <div class="req-avatar">🧍</div>
+          <div class="req-info">
+            <div class="req-name">${r.rider_name || r.rider_email}</div>
+            <div class="req-meta">${r.note ? r.note.substring(0,40) : 'No note'} · ${timeAgo(r.created_at)}</div>
+          </div>
+          <div class="req-shuttle">#${r.shuttle_number}</div>
+        </div>
+      `).join('');
+            }
+
+            // shuttle activity
+            const shuttleMap = {};
+            pendingItems.forEach(r => {
+                shuttleMap[r.shuttle_number] = (shuttleMap[r.shuttle_number]||0)+1;
+            });
+            const sEl = document.getElementById('dash-shuttle-stats');
+            const shuttles = Object.entries(shuttleMap);
+            if (shuttles.length === 0) {
+                sEl.innerHTML = '<p style="font-size:8px;color:#999;text-align:center;padding:20px;">No active shuttle requests</p>';
+            } else {
+                sEl.innerHTML = shuttles.map(([num, cnt]) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #E0D8C8;">
+          <span style="font-size:8px;">🚌 Shuttle #${num}</span>
+          <span class="badge badge-yellow">${cnt} pending</span>
+        </div>
+      `).join('');
+            }
+
+            document.getElementById('dash-suspended-count').textContent = '0 suspended accounts';
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    // ═══════════════════════════════════════════════
+    //   RIDERS
+    // ═══════════════════════════════════════════════
+    async function loadRiders() {
+        const r = await api('/rest/v1/users?role=eq.rider&select=*&order=created_at.desc');
+        allRiders = r.data || [];
+        document.getElementById('riders-count').textContent = allRiders.length + ' riders';
+        renderRiders(allRiders);
+    }
+
+    function renderRiders(list) {
+        const tb = document.getElementById('riders-tbody');
+        if (!list.length) {
+            tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No riders found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = list.map(u => {
+            const suspended = u.is_suspended;
+            return `<tr>
+      <td><strong>${u.name || '—'}</strong></td>
+      <td style="color:#555;">${u.email}</td>
+      <td><span class="badge ${(u.daily_request_count||0)>=3?'badge-red':'badge-blue'}">${u.daily_request_count||0}/3</span></td>
+      <td>${suspended ? '<span class="badge badge-red">SUSPENDED</span>' : '<span class="badge badge-green">ACTIVE</span>'}</td>
+      <td style="color:#888;font-size:7px;">${formatDate(u.created_at)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="pixel-btn btn-blue" style="font-size:6px;padding:4px 7px;" onclick="viewUser('${u.id}','rider')">VIEW</button>
+        ${suspended
+                ? `<button class="pixel-btn btn-green" style="font-size:6px;padding:4px 7px;" onclick="restoreUser('${u.id}')">RESTORE</button>`
+                : `<button class="pixel-btn btn-red" style="font-size:6px;padding:4px 7px;" onclick="confirmSuspend('${u.id}','${u.name||u.email}')">SUSPEND</button>`
+            }
+      </td>
+    </tr>`;
+        }).join('');
+    }
+
+    function filterRiders() {
+        const q = document.getElementById('rider-search').value.toLowerCase();
+        const f = document.getElementById('rider-filter').value;
+        let list = allRiders.filter(u => {
+            const match = (u.name||'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+            if (f === 'suspended') return match && u.is_suspended;
+            if (f === 'active') return match && !u.is_suspended;
+            return match;
+        });
+        renderRiders(list);
+    }
+
+    // ═══════════════════════════════════════════════
+    //   DRIVERS
+    // ═══════════════════════════════════════════════
+    async function loadDrivers() {
+        const r = await api('/rest/v1/users?role=eq.driver&select=*&order=created_at.desc');
+        allDrivers = r.data || [];
+        renderDrivers(allDrivers);
+    }
+
+    function renderDrivers(list) {
+        const tb = document.getElementById('drivers-tbody');
+        if (!list.length) {
+            tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No drivers found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = list.map(u => {
+            const suspended = u.is_suspended;
+            return `<tr>
+      <td><strong>${u.name||'—'}</strong></td>
+      <td style="color:#555;">${u.email}</td>
+      <td><span class="badge badge-yellow">Shuttle #${u.shuttle_number||'—'}</span></td>
+      <td>${suspended ? '<span class="badge badge-red">SUSPENDED</span>' : '<span class="badge badge-green">ACTIVE</span>'}</td>
+      <td style="color:#888;font-size:7px;">${formatDate(u.created_at)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="pixel-btn btn-blue" style="font-size:6px;padding:4px 7px;" onclick="editDriver('${u.id}','${u.name||''}','${u.shuttle_number||''}')">EDIT</button>
+        ${suspended
+                ? `<button class="pixel-btn btn-green" style="font-size:6px;padding:4px 7px;" onclick="restoreUser('${u.id}')">RESTORE</button>`
+                : `<button class="pixel-btn btn-red" style="font-size:6px;padding:4px 7px;" onclick="confirmSuspend('${u.id}','${u.name||u.email}')">SUSPEND</button>`
+            }
+      </td>
+    </tr>`;
+        }).join('');
+    }
+
+    function filterDrivers() {
+        const q = document.getElementById('driver-search').value.toLowerCase();
+        const list = allDrivers.filter(u =>
+            (u.name||'').toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q) ||
+            (u.shuttle_number||'').toLowerCase().includes(q)
+        );
+        renderDrivers(list);
+    }
+
+    // ═══════════════════════════════════════════════
+    //   CREATE DRIVER
+    // ═══════════════════════════════════════════════
+    async function createDriver() {
+        const name = document.getElementById('new-driver-name').value.trim();
+        const email = document.getElementById('new-driver-email').value.trim();
+        const shuttle = document.getElementById('new-driver-shuttle').value.trim();
+        const pass = document.getElementById('new-driver-password').value;
+        const alertEl = document.getElementById('create-driver-alert');
+
+        if (!name || !email || !shuttle || !pass) {
+            alertEl.className = 'alert alert-danger';
+            alertEl.innerHTML = '<span>❌</span><span>All fields are required.</span>';
+            alertEl.style.display = 'flex'; return;
+        }
+        if (pass.length < 6) {
+            alertEl.className = 'alert alert-danger';
+            alertEl.innerHTML = '<span>❌</span><span>Password must be at least 6 characters.</span>';
+            alertEl.style.display = 'flex'; return;
+        }
+
+        alertEl.className = 'alert alert-info';
+        alertEl.innerHTML = '<span>⏳</span><span>Creating account...</span>';
+        alertEl.style.display = 'flex';
+
+        try {
+            // Sign up via Supabase Auth
+            const signupRes = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass, data: { name } })
+            });
+            const signupData = await signupRes.json();
+
+            if (!signupRes.ok) {
+                alertEl.className = 'alert alert-danger';
+                alertEl.innerHTML = `<span>❌</span><span>${signupData.msg || 'Signup failed.'}</span>`;
+                return;
+            }
+
+            const uid = signupData.user?.id || signupData.id;
+            if (!uid) {
+                alertEl.className = 'alert alert-danger';
+                alertEl.innerHTML = '<span>❌</span><span>Could not retrieve user ID.</span>';
+                return;
+            }
+
+            // Update role + shuttle in users table
+            const updateRes = await api(`/rest/v1/users?id=eq.${uid}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ role: 'driver', shuttle_number: shuttle, name })
+            });
+
+            if (!updateRes.ok) {
+                // Try insert if row doesn't exist yet
+                await api('/rest/v1/users', {
+                    method: 'POST',
+                    headers: { Prefer: 'return=minimal' },
+                    body: JSON.stringify({ id: uid, email, name, role: 'driver', shuttle_number: shuttle, daily_request_count: 0 })
+                });
+            }
+
+            alertEl.className = 'alert alert-success';
+            alertEl.innerHTML = `<span>✅</span><span>Driver account created! Email: <strong>${email}</strong> · Temp Password: <strong>${pass}</strong></span>`;
+            document.getElementById('new-driver-name').value = '';
+            document.getElementById('new-driver-email').value = '';
+            document.getElementById('new-driver-shuttle').value = '';
+            document.getElementById('new-driver-password').value = '';
+            toast('Driver account created successfully!');
+            loadDrivers();
+        } catch(e) {
+            alertEl.className = 'alert alert-danger';
+            alertEl.innerHTML = '<span>❌</span><span>Network error. Check console.</span>';
+            console.error(e);
+        }
+    }
+
+    // ═══════════════════════════════════════════════
+    //   EDIT DRIVER
+    // ═══════════════════════════════════════════════
+    function editDriver(id, name, shuttle) {
+        document.getElementById('edit-driver-id').value = id;
+        document.getElementById('edit-driver-name').value = name;
+        document.getElementById('edit-driver-shuttle').value = shuttle;
+        openModal('modal-edit-driver');
+    }
+
+    async function saveDriverEdit() {
+        const id = document.getElementById('edit-driver-id').value;
+        const name = document.getElementById('edit-driver-name').value.trim();
+        const shuttle = document.getElementById('edit-driver-shuttle').value.trim();
+        if (!name || !shuttle) { toast('Name and shuttle number are required.', 'error'); return; }
+        const r = await api(`/rest/v1/users?id=eq.${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ name, shuttle_number: shuttle })
+        });
+        if (r.ok) {
+            toast('Driver updated!');
+            closeModal('modal-edit-driver');
+            loadDrivers();
+            loadShuttles();
+        } else {
+            toast('Update failed.', 'error');
+        }
+    }
+
+    // ═══════════════════════════════════════════════
+    //   VIEW USER
+    // ═══════════════════════════════════════════════
+    async function viewUser(id, role) {
+        currentModalUserId = id;
+        const r = await api(`/rest/v1/users?id=eq.${id}&select=*`);
+        const u = r.data?.[0];
+        if (!u) return;
+        currentModalUserSuspended = !!u.is_suspended;
+        const btn = document.getElementById('modal-suspend-btn');
+        btn.textContent = u.is_suspended ? '✅ RESTORE' : '🚫 SUSPEND';
+        btn.className = 'pixel-btn ' + (u.is_suspended ? 'btn-green' : 'btn-red');
+
+        document.getElementById('modal-user-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div style="width:48px;height:48px;background:var(--green-dark);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-size:18px;">
+        ${role === 'driver' ? '🚗' : '🧍'}
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--green-dark);margin-bottom:4px;">${u.name||'—'}</div>
+        <div style="font-size:8px;color:#666;">${u.email}</div>
+        <div style="margin-top:6px;">${u.is_suspended ? '<span class="badge badge-red">SUSPENDED</span>' : '<span class="badge badge-green">ACTIVE</span>'}</div>
+      </div>
+    </div>
+    <div class="pixel-divider"></div>
+    <table style="font-size:8px;width:100%;">
+      <tr><td style="color:#666;padding:6px 0;width:40%;">ROLE</td><td><span class="badge ${role==='driver'?'badge-yellow':'badge-blue'}">${role.toUpperCase()}</span></td></tr>
+      ${role === 'driver' ? `<tr><td style="color:#666;padding:6px 0;">SHUTTLE</td><td>#${u.shuttle_number||'—'}</td></tr>` : ''}
+      <tr><td style="color:#666;padding:6px 0;">REQUESTS TODAY</td><td>${u.daily_request_count||0}</td></tr>
+      <tr><td style="color:#666;padding:6px 0;">JOINED</td><td>${formatDate(u.created_at)}</td></tr>
+      <tr><td style="color:#666;padding:6px 0;">LAST REQUEST</td><td>${u.last_request_date ? formatDate(u.last_request_date) : 'Never'}</td></tr>
+    </table>
+  `;
+        openModal('modal-user');
+    }
+
+    async function suspendUserFromModal() {
+        if (currentModalUserSuspended) {
+            await restoreUser(currentModalUserId);
+        } else {
+            confirmSuspendAction(currentModalUserId, '');
+        }
+        closeModal('modal-user');
+    }
+
+    // ═══════════════════════════════════════════════
+    //   SUSPEND / RESTORE
+    // ═══════════════════════════════════════════════
+    function confirmSuspend(id, name) {
+        document.getElementById('confirm-msg').textContent =
+            `Are you sure you want to suspend "${name}"? They will not be able to log in.`;
+        const btn = document.getElementById('confirm-ok-btn');
+        btn.onclick = () => { closeModal('modal-confirm'); suspendUser(id); };
+        openModal('modal-confirm');
+    }
+
+    function confirmSuspendAction(id, name) {
+        confirmSuspend(id, name);
+    }
+
+    async function suspendUser(id) {
+        const r = await api(`/rest/v1/users?id=eq.${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_suspended: true })
+        });
+        if (r.ok) {
+            toast('Account suspended.');
+            loadRiders(); loadDrivers(); loadSuspended();
+        } else {
+            // Column may not exist yet — show helper
+            toast('Add is_suspended column to users table! See console.', 'warning');
+            console.warn('Add this SQL: ALTER TABLE users ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE;');
+        }
+    }
+
+    async function restoreUser(id) {
+        const r = await api(`/rest/v1/users?id=eq.${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_suspended: false })
+        });
+        if (r.ok) {
+            toast('Account restored!');
+            loadRiders(); loadDrivers(); loadSuspended();
+        } else {
+            toast('Restore failed.', 'error');
+        }
+    }
+
+    // ═══════════════════════════════════════════════
+    //   PRIORITY REQUESTS
+    // ═══════════════════════════════════════════════
+    async function loadRequests() {
+        const r = await api('/rest/v1/priority_requests?handled=eq.false&select=*&order=created_at.asc');
+        const items = r.data || [];
+        const el = document.getElementById('pending-list');
+        if (!items.length) {
+            el.innerHTML = '<div class="empty-state"><span class="empty-icon">✅</span>No pending requests right now!</div>';
+            return;
+        }
+        el.innerHTML = items.map(req => `
+    <div class="req-card">
+      <div class="req-avatar">🧍</div>
+      <div class="req-info">
+        <div class="req-name">${req.rider_name || req.rider_email}</div>
+        <div class="req-meta">${req.note || 'No note provided'}</div>
+        <div class="req-meta" style="margin-top:3px;color:#aaa;">${timeAgo(req.created_at)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <div class="req-shuttle">#${req.shuttle_number}</div>
+        <button class="pixel-btn btn-green" style="font-size:6px;padding:4px 8px;" onclick="markHandled(${req.id})">✓ HANDLED</button>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    async function markHandled(id) {
+        const r = await api(`/rest/v1/priority_requests?id=eq.${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ handled: true, handled_at: new Date().toISOString() })
+        });
+        if (r.ok) { toast('Marked as handled!'); loadRequests(); loadDashboard(); }
+        else toast('Failed to update.', 'error');
+    }
+
+    async function loadHandledRequests() {
+        const r = await api('/rest/v1/priority_requests?handled=eq.true&select=*&order=handled_at.desc&limit=50');
+        const items = r.data || [];
+        const tb = document.getElementById('handled-tbody');
+        if (!items.length) {
+            tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">No handled requests yet.</td></tr>';
+            return;
+        }
+        tb.innerHTML = items.map(r => `<tr>
+    <td>${r.rider_name||r.rider_email}</td>
+    <td><span class="badge badge-yellow">#${r.shuttle_number}</span></td>
+    <td style="color:#666;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.note||'—'}</td>
+    <td style="color:#888;font-size:7px;">${formatDate(r.created_at)}</td>
+    <td style="color:#888;font-size:7px;">${r.handled_at ? formatDate(r.handled_at) : '—'}</td>
+  </tr>`).join('');
+    }
+
+    async function loadAllRequests() {
+        const shuttle = document.getElementById('req-shuttle-filter').value;
+        let url = '/rest/v1/priority_requests?select=*&order=created_at.desc&limit=100';
+        if (shuttle) url += `&shuttle_number=eq.${shuttle}`;
+        const r = await api(url);
+        const items = r.data || [];
+
+        // Populate filter
+        const allShuttles = [...new Set(items.map(i => i.shuttle_number))].sort();
+        const sel = document.getElementById('req-shuttle-filter');
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">All Shuttles</option>' +
+            allShuttles.map(s => `<option value="${s}" ${s===cur?'selected':''}>#${s}</option>`).join('');
+
+        const tb = document.getElementById('all-req-tbody');
+        if (!items.length) {
+            tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No requests found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = items.map(r => `<tr>
+    <td>${r.rider_name||'—'}</td>
+    <td style="color:#555;font-size:7px;">${r.rider_email}</td>
+    <td><span class="badge badge-yellow">#${r.shuttle_number}</span></td>
+    <td style="color:#666;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.note||'—'}</td>
+    <td>${r.handled ? '<span class="badge badge-green">HANDLED</span>' : '<span class="badge badge-yellow">PENDING</span>'}</td>
+    <td style="color:#888;font-size:7px;">${formatDate(r.created_at)}</td>
+  </tr>`).join('');
+    }
+
+    // ═══════════════════════════════════════════════
+    //   SHUTTLES
+    // ═══════════════════════════════════════════════
+    async function loadShuttles() {
+        const r = await api('/rest/v1/users?role=eq.driver&select=*&order=shuttle_number.asc');
+        const drivers = r.data || [];
+        document.getElementById('shuttle-count').textContent = drivers.length + ' shuttles';
+
+        const reqR = await api('/rest/v1/priority_requests?handled=eq.false&select=shuttle_number');
+        const pendingMap = {};
+        (reqR.data||[]).forEach(p => {
+            pendingMap[p.shuttle_number] = (pendingMap[p.shuttle_number]||0)+1;
+        });
+
+        const grid = document.getElementById('shuttles-grid');
+        if (!drivers.length) {
+            grid.innerHTML = '<div class="empty-state"><span class="empty-icon">🚌</span>No shuttles configured yet.</div>';
+            return;
+        }
+        grid.innerHTML = drivers.map(d => {
+            const pending = pendingMap[d.shuttle_number] || 0;
+            const suspended = d.is_suspended;
+            return `
+    <div style="background:var(--card-bg);border:3px solid var(--green-dark);box-shadow:4px 4px 0 var(--green-dark);padding:16px;">
+      <div style="font-size:28px;text-align:center;margin-bottom:10px;">🚌</div>
+      <div style="text-align:center;margin-bottom:4px;">
+        <span style="font-size:14px;color:var(--green-dark);font-family:'VT323',monospace;">Shuttle #${d.shuttle_number||'—'}</span>
+      </div>
+      <div class="pixel-divider"></div>
+      <div style="font-size:8px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="color:#666;">DRIVER</span>
+          <span>${d.name||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="color:#666;">PENDING</span>
+          <span class="badge ${pending>0?'badge-yellow':'badge-green'}">${pending}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#666;">STATUS</span>
+          ${suspended ? '<span class="badge badge-red">SUSPENDED</span>' : '<span class="badge badge-green">ACTIVE</span>'}
+        </div>
+      </div>
+      <button class="pixel-btn btn-outline" style="width:100%;margin-top:10px;font-size:7px;padding:6px;" 
+        onclick="editDriver('${d.id}','${d.name||''}','${d.shuttle_number||''}')">
+        ✏ EDIT SHUTTLE
+      </button>
+    </div>`;
+        }).join('');
+    }
+
+    // ═══════════════════════════════════════════════
+    //   SUSPENDED
+    // ═══════════════════════════════════════════════
+    async function loadSuspended() {
+        const r = await api('/rest/v1/users?is_suspended=eq.true&select=*&order=created_at.desc');
+        const items = r.data || [];
+        document.getElementById('dash-suspended-count').textContent = items.length + ' suspended accounts';
+        const tb = document.getElementById('suspended-tbody');
+        if (!items.length) {
+            tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No suspended accounts.</td></tr>';
+            return;
+        }
+        tb.innerHTML = items.map(u => `<tr>
+    <td><strong>${u.name||'—'}</strong></td>
+    <td style="color:#555;">${u.email}</td>
+    <td><span class="badge ${u.role==='driver'?'badge-yellow':'badge-blue'}">${u.role.toUpperCase()}</span></td>
+    <td style="color:#888;">Admin</td>
+    <td style="color:#888;font-size:7px;">${formatDate(u.created_at)}</td>
+    <td>
+      <button class="pixel-btn btn-green" style="font-size:6px;padding:4px 8px;" onclick="restoreUser('${u.id}')">✅ RESTORE</button>
+    </td>
+  </tr>`).join('');
+    }
+
+    // ═══════════════════════════════════════════════
+    //   UTILS
+    // ═══════════════════════════════════════════════
+    function formatDate(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return d.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+    }
+
+    function timeAgo(iso) {
+        if (!iso) return '';
+        const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+        if (diff < 60) return diff + 's ago';
+        if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+        return Math.floor(diff/86400) + 'd ago';
+    }
+
+    // ═══════════════════════════════════════════════
+    //   KEYBOARD: Enter on login
+    // ═══════════════════════════════════════════════
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && document.getElementById('login-page').style.display !== 'none') {
+            doLogin();
+        }
+    });
+</script>
+</body>
+</html>
