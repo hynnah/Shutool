@@ -54,6 +54,14 @@ public partial class LoginPage : ContentPage
                 return;
             }
 
+            if (userRecord.IsSuspended)
+            {
+                ErrorLabel.Text = "Your account has been suspended. Contact admin.";
+                ErrorLabel.IsVisible = true;
+                await _supabaseService.Client.Auth.SignOut();
+                return;
+            }
+
             Page nextPage = userRecord.Role switch
             {
                 "driver" => new DriverMainPage(_supabaseService),

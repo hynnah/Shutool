@@ -27,6 +27,9 @@ public class UserModel : BaseModel
     [Column("last_request_date")]
     public DateTimeOffset? LastRequestDate { get; set; }
 
+    [Column("is_suspended")]
+    public bool IsSuspended { get; set; }
+
     [Column("created_at")]
     public DateTimeOffset CreatedAt { get; set; }
 }
