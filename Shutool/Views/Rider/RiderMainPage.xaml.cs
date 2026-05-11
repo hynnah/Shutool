@@ -47,10 +47,12 @@ public partial class RiderMainPage : ContentPage
             var drivers = await _supabaseService.Client
                 .From<UserModel>().Where(u => u.Role == "driver").Get();
             ShuttlePicker.Items.Clear();
-            if (drivers?.Models != null)
-                foreach (var driver in drivers.Models)
-                    if (!string.IsNullOrEmpty(driver.ShuttleNumber))
-                        ShuttlePicker.Items.Add(driver.ShuttleNumber);
+            var sorted = drivers.Models
+                .Where(d => !string.IsNullOrEmpty(d.ShuttleNumber))
+                .OrderBy(d => d.ShuttleNumber)
+                .ToList();
+            foreach (var driver in sorted)
+                ShuttlePicker.Items.Add(driver.ShuttleNumber);
         }
         catch (Exception ex)
         {

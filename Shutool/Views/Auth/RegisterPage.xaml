@@ -17,20 +17,6 @@
                 Spacing="0"
                 VerticalOptions="Center">
 
-                <!-- Top Icons Row -->
-                <Grid Margin="0,48,0,0">
-                    <Image
-                        Source="settings.png"
-                        HeightRequest="36"
-                        WidthRequest="36"
-                        HorizontalOptions="Start"/>
-                    <Image
-                        Source="settings2.png"
-                        HeightRequest="36"
-                        WidthRequest="36"
-                        HorizontalOptions="End"/>
-                </Grid>
-
                 <!-- Bus Image -->
                 <Image
                     Source="bus.png"
